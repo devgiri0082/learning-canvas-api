@@ -44,3 +44,7 @@ body {
 #canvas {
   background-color: white;
 }
+.start {
+  gap: 5px;
+  display: flex;
+}

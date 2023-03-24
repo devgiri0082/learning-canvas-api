@@ -1,4 +1,4 @@
-type Particle = {
+type ParticleProps = {
    x: number,
    y: number,
    height: number,
@@ -8,6 +8,28 @@ type Particle = {
 
 }
 
+class Particle {
+   public x: number;
+   public y: number;
+   public height: number;
+   public width: number;
+   public color: string;
+   public dead: boolean;
+
+   constructor(props: ParticleProps) {
+      this.x = props.x;
+      this.y = props.y;
+      this.height = props.height;
+      this.width = props.width;
+      this.color = props.color;
+      this.dead = props.dead
+   }
+
+   public static create(props: ParticleProps) {
+      return new Particle(props);
+   }
+}
+
 class CanvasAnimation {
    private canvas: HTMLCanvasElement;
    private ctx: CanvasRenderingContext2D;
@@ -15,7 +37,7 @@ class CanvasAnimation {
    private enemyBullets: Particle[] = [];
    private playerBullets: Particle[] = [];
    private player: Particle | null = null;
-   private bulletSpeed: number = 1;
+   private bulletSpeed: number = 5;
    private tick: number = 100;
    private enemySpeed: number = 3;
    private gameWon: boolean = false;
@@ -30,14 +52,14 @@ class CanvasAnimation {
    }
 
    private initPlayer() {
-      this.player = {
+      this.player = Particle.create({
          x: 20,
          y: this.canvas.height - 40 - 20,
          color: 'blue',
          height: 20,
          width: 20,
          dead: false
-      }
+      })
    }
 
 
@@ -46,7 +68,9 @@ class CanvasAnimation {
          if (!this.player) return;
          if (e.key === 'ArrowLeft') {
             if (this.player.x <= 0) this.player.x = 0;
-            else this.player.x = this.player.x - 10;
+            else {
+               this.player.x = this.player.x - 10;
+            }
          } else if (e.key === 'ArrowRight') {
             if (this.player.x + this.player.width >= this.canvas.width) this.player.x = this.canvas.width - this.player.width
             else this.player.x = this.player.x + 10;
@@ -55,18 +79,24 @@ class CanvasAnimation {
                this.resetGame();
                this.startAnimation();
             } else {
-               this.playerBullets.push({
+               this.playerBullets.push(Particle.create({
                   x: this.player.x + this.player.width / 2,
                   y: this.player.y - 10,
                   color: 'red',
                   height: 10,
                   width: 2,
                   dead: false
-               })
+               }))
             }
          }
       })
    }
+
+   // updatePlayerPosition() {
+   //    if(!this.player) return;
+   //    this.player.x += 10;
+   //    requestAnimationFrame(this.updatePlayerPosition);
+   //  }
 
    checkPlayerEnemyBulletIntersection() {
       if (!this.player) return;
@@ -127,14 +157,14 @@ class CanvasAnimation {
    }
    private initEnemy(num: number) {
       for (let i = 0; i < num; i++) {
-         this.enemies.push({
+         this.enemies.push(Particle.create({
             x: 60 * i + 20,
             y: 20,
             height: 40,
             width: 40,
             color: 'green',
             dead: false
-         })
+         }))
 
       }
    }
@@ -143,22 +173,22 @@ class CanvasAnimation {
       if (this.tick % 100 === 0) {
          this.enemies.forEach((enemy) => {
             if (!enemy.dead) {
-               this.enemyBullets.push({
+               this.enemyBullets.push(Particle.create({
                   x: enemy.x + enemy.width / 2,
                   y: enemy.y + enemy.height,
                   color: 'yellow',
                   height: 10,
                   width: 2,
                   dead: false
-               })
-               this.enemyBullets.push({
+               }))
+               this.enemyBullets.push(Particle.create({
                   x: enemy.x + enemy.width / 2,
                   y: enemy.y + enemy.height + 20,
                   color: 'yellow',
                   height: 10,
                   width: 2,
                   dead: false
-               })
+               }))
             }
 
          })
